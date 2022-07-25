@@ -1,0 +1,80 @@
+---
+title: "Eli Lauwers - Causality Project"
+output: pdf_document
+date: "2022-07-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = F,
+  warning = F,
+  error = F,
+  comment = "",
+  prompt = F, 
+  tidy = T
+)
+library(dplyr)
+set.seed(1234)
+```
+
+# Background {.unnumbered}
+
+Copy background
+
+# Preparation {.unnumbered}
+
+Read the dataset and modify it as follows:
+
+(code available in the .Rmd file)
+
+```{r preparation, echo = F}
+library("readxl")
+nhefs <- read_excel("nhefs.xls")
+# Ignore patients with missing outcome
+nhefs.nmv <- nhefs[which(!is.na(nhefs$wt82_71)), ]
+# Dichotomize the outcome variable
+nhefs.nmv$wt82_71_bin <- ifelse(nhefs.nmv$wt82_71 > 0, 1, 0)
+# Select reduced dataset
+nhefs.nmv <-
+  nhefs.nmv[, (
+    names(nhefs.nmv) %in% c(
+      # Weigth gain between 72 and 82
+      # => 1 if weight gain is present, 0 otherwise
+      "wt82_71_bin", 
+      "qsmk", # quit smoking 
+      "sex",
+      "dbp",
+      "race",
+      "sbp",
+      "age",
+      "education",
+      "smokeintensity",
+      "smokeyrs",
+      "tax71_82",
+      "exercise",
+      "active",
+      "wt71"
+    )
+  )]
+```
+
+In our analysis of this observational study we will aim to evaluate the marginal effect of quitting smoking (the information is held in the variable `qsmk`) on the weight gain between years 1971 and 1982 (the information is held in the variable `wt82_71_bin`, which is 1, in case of weight gain and 0 otherwise). The tutorial [1] may be a helpful reference for your analysis. Throughout, you may assume that the dataset contains a collection of covariates that is sufficient to control for confounding of the effect of quitting smoking on the risk of weight gain.
+
+\newpage
+
+# Logistic Regression outcome model
+
+**Question**: Estimate the marginal effect of quitting smoking on the risk of weight gain as a risk difference and a relative risk using a logistic regression outcome model. There is no need to be very exhaustive in building a model. You may for instance consider using a standard model choice, and make use of automated procedures (e.g. step in R) to select variables, if needed. More thorough model building will be considered later using causal machine 
+learning methods.
+
+**answer**: 
+
+**Argumentation**:
+
+
+```{r q1, file = "q1_naive.R"}
+```
+
+```{r q1, file = "q1_stdReg.R"}
+```

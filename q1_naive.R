@@ -1,0 +1,6 @@
+source("step_backwards.R")
+model = step_backwards(data=nhefs.nmv, outcome="wt82_71_bin", treatment = "qsmk", verbose = 1)
+p0 = mean(predict(model, na.omit(mutate(nhefs.nmv, qsmk = 0)), type = "response"))
+p1 = mean(predict(model, na.omit(mutate(nhefs.nmv, qsmk = 1)), type = "response"))
+cat(c("Risk Difference\t", p1 - p0,"\n"))
+cat(c("Relative risk\t", p1/p0,"\n"))
