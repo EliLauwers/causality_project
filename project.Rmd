@@ -1,6 +1,8 @@
 ---
 title: "Eli Lauwers - Causality Project"
-output: pdf_document
+output:
+  pdf_document:
+    number_sections: True
 date: "2022-07-24"
 ---
 
@@ -15,8 +17,10 @@ knitr::opts_chunk$set(
   tidy = T
 )
 library(dplyr)
+library(ggplot2)
 set.seed(1234)
 ```
+
 
 # Background {.unnumbered}
 
@@ -57,6 +61,8 @@ nhefs.nmv <-
       "wt71"
     )
   )]
+
+nhefs.nmv = nhefs.nmv[complete.cases(nhefs.nmv),]
 ```
 
 In our analysis of this observational study we will aim to evaluate the marginal effect of quitting smoking (the information is held in the variable `qsmk`) on the weight gain between years 1971 and 1982 (the information is held in the variable `wt82_71_bin`, which is 1, in case of weight gain and 0 otherwise). The tutorial [1] may be a helpful reference for your analysis. Throughout, you may assume that the dataset contains a collection of covariates that is sufficient to control for confounding of the effect of quitting smoking on the risk of weight gain.
@@ -68,13 +74,45 @@ In our analysis of this observational study we will aim to evaluate the marginal
 **Question**: Estimate the marginal effect of quitting smoking on the risk of weight gain as a risk difference and a relative risk using a logistic regression outcome model. There is no need to be very exhaustive in building a model. You may for instance consider using a standard model choice, and make use of automated procedures (e.g. step in R) to select variables, if needed. More thorough model building will be considered later using causal machine 
 learning methods.
 
-**answer**: 
+**answer**: I used manual g-computation and a logistic outcome model (with predictors `qsmk`, `dbp`, `sex`, `age`, `wt71`, `smokeintensity`, `active`) to predict counterfactual outcomes. following results were obtained
+
+- Risk Difference:\phantom{h} **ADD** (p1 - p0)
+- Relative risk:\phantom{hhh} **ADD** (p1 / p0)
+
+I also used the `stdReg` package to cross check results.
 
 **Argumentation**:
 
+For the manual approach, I used the backwards step model to predict counterfactual outcomes for every instance in the dataset, while manually setting the treatment (`qsmk`) variable to a certain level. I only used predictions for instances without any missing data.Next, I averaged the results and calculated the effect measures.
 
-```{r q1, file = "q1_naive.R"}
+For information on the custom `step_backwards`-function, please see the appendix. In short, it uses a `while`-loop which refits the model until (1) every coefficient has a p value under the cut-off (.5) or (2) the treatment variable (`qsmk`) has the highest p value. 
+
+```{r q1, file = "q1.R",echo=seq(17)}
+source("q1.R")
 ```
 
-```{r q1, file = "q1_stdReg.R"}
+\newpage
+
+# Advantages of causal machine learning
+
+**Question**: Briefly discuss what you view as possible advantages of causal machine learning approaches (like those considered from question 4 onwards), relative to more standard statistical analyses as in question 1. List 2 possible advantages.
+
+**Answer**:
+
+\newpage
+
+# Propensity scores
+
+**Question**: Use logistic regression to compute the propensity score for quitting smoking. There is no need to be very exhaustive in building a model. You may for instance consider using a standard model choice, and make use of automated procedures (e.g. step in R) to select variables, if needed. More thorough model building will be considered later using causal machine learning methods.
+
+Discuss the balance of covariates, distribution of propensity scores in both exposure groups and the overlap. Discuss if, based on the obtained results, you foresee difficulties in inferring the effect of quitting smoking on the risk of weight gain.
+
+**Answer**:
+
+**Argumentation**:
+
+```{r q3, file="q3.R",echo=seq(3)}
+source("q3.R")
 ```
+
+

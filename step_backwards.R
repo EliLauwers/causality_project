@@ -1,10 +1,5 @@
-step_backwards = function(data, outcome, treatment, predictors = NULL, verbose=0) {
-  if (is.null(predictors)){
-    predictors = names(nhefs.nmv)[names(nhefs.nmv) != outcome]
-  }
-  
+step_backwards = function(data, outcome, predictors, treatment = NULL, verbose=0,cutoff = .5) {
   predictors.removed = c()
-  cutoff = .5
   while (T) {
     # Select in scope predictors for this iteration
     predictors.quest = predictors[!predictors %in% predictors.removed]
@@ -21,7 +16,7 @@ step_backwards = function(data, outcome, treatment, predictors = NULL, verbose=0
     # retrieve the max predictor
     predictor.max = names(p.values[which(p.values == max(p.values))])
     # break if the highest predictor is the treatment
-    if (predictor.max == treatment)
+    if (!is.null(treatment) && predictor.max == treatment)
       break
     if (max(p.values) <= cutoff)
       break
@@ -38,10 +33,12 @@ step_backwards = function(data, outcome, treatment, predictors = NULL, verbose=0
     kept.pred.str = paste("  Kept:", paste(predictors.quest, collapse = ", "))
     rem.pred.str = paste("  Removed:", paste(predictors.removed, collapse = ", "))
     
-    cat(c("Predictors in backwards procedure:\n",
+    cat(c(glue::glue("Predictors in backwards procedure for {outcome}:"),
+          "\n",
           kept.pred.str,
           "\n",
-          rem.pred.str))
+          rem.pred.str,
+          "\n"))
   }
   
   return(model)
