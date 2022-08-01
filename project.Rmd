@@ -116,3 +116,29 @@ source("q3.R")
 ```
 
 
+\newpage
+
+# TMLE for 3 modelling cases
+
+**Question**: Calculate the targeted maximum likelihood estimate (TMLE) of the marginal effect of quitting smoking on the risk of weight gain (on the risk difference scale). Consider 3 cases in terms of modelling the propensity score and the risk of weight gain:
+
+- logistic regression models obtained above;
+- SuperLearner with default options for the outcome regression and propensity score models;
+- SuperLearner with the following selection of the models for the outcome regression and propensity score models.
+
+`SL.library <- c("SL.glm","SL.step","SL.step.interaction", "SL.glm.interaction", "SL.gam", "SL.randomForest", "SL.rpart")`
+
+For this, you can either use the `tmle` function in R, or follow the steps of the tutorial. Estimate the standard errors and 95% confidence intervals for the obtained estimates (there is no need for using the bootstrap). Compare the results for different modelling
+choices
+
+**Answer**:
+
+**Argumentation**
+
+```{r q4 tutorial, file = "q4_tutorial.R"}
+source("q4_tutorial.R")
+```
+
+```{r q4 Superlearner, file = "q4_superlearner.R"}
+source("q4_superlearner.R")
+```

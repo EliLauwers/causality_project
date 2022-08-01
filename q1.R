@@ -9,12 +9,13 @@ model = step_backwards(
   cutoff = .1,
   verbose = 1
 )
-# counterfactual outcomes on data without any missingness
+# Using G computation
 p0 = mean(predict(model, na.omit(mutate(nhefs.nmv, qsmk = 0)), type = "response"))
 p1 = mean(predict(model, na.omit(mutate(nhefs.nmv, qsmk = 1)), type = "response"))
-rd.man = p1 - p0
-rr.man = p1 / p0
-# crosscheck results
+rd.g = p1 - p0
+rr.g = p1 / p0
+
+# crosscheck results using stdReg
 model.std = stdReg::stdGlm(model,
                            data = nhefs.nmv,
                            X = "qsmk",
@@ -27,7 +28,7 @@ model.std.ratio = summary(model.std, contrast = "ratio", reference = 0)
 rr.stdreg = model.std.ratio$est.table[2, "Estimate"]
 
 knitr::kable(data.frame(
-  first = c("Manual", "stdReg"),
-  second = c(rd.man, rd.stdreg),
-  third = c(rr.man, rr.stdreg)
+  first = c( "Manual", "stdReg"),
+  second = c( rd.g, rd.stdreg),
+  third = c( rr.g, rr.stdreg)
 ), col.names = c("", "Risk Difference", "Relative Risk"), format = "simple", digits = 3)
