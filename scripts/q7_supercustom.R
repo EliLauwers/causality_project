@@ -1,0 +1,62 @@
+# Step 1: the outcome model
+n = nrow(nhefs.nmv)
+newdata = bind_rows(nhefs.nmv,
+                    mutate(nhefs.nmv, qsmk = 1),
+                    mutate(nhefs.nmv, qsmk = 0))
+
+formula.outcome = as.formula(paste0("wt82_71_bin~", paste0(preds.ds, collapse = "+")))
+
+SL.library <-
+  c(
+    "SL.glm",
+    "SL.step",
+    "SL.step.interaction",
+    "SL.glm.interaction",
+    "SL.gam",
+    "SL.randomForest",
+    "SL.rpart"
+  )
+
+
+# outcome model
+Qinit = SuperLearner(
+  Y = nhefs.nmv$wt82_71_bin,
+  X = nhefs.nmv[preds.ds],
+  SL.library = SL.library,
+  newX = newdata[preds.ds],
+  family = "binomial"
+)
+QAW = Qinit$SL.predict[1:n]
+Q1W = Qinit$SL.predict[(n + 1):(2 * n)]
+Q0W = Qinit$SL.predict[(2 * n + 1):(3 * n)]
+
+# Step 2: propensity score
+formula.propensity = as.formula(paste0("qsmk~", paste0(preds.ds[preds.ds!="qsmk"], collapse = "+")))
+psm = SuperLearner(
+  Y = nhefs.nmv$qsmk,
+  X = nhefs.nmv[preds.ds[preds.ds!="qsmk"]],
+  SL.library = SL.library,
+  newX = newdata[preds.ds[preds.ds!="qsmk"]],
+  family = "binomial"
+)
+gW = psm$SL.predict[1:n]
+# step 3: The clever covariate
+H1W = nhefs.nmv$qsmk/gW
+H0W = (1-nhefs.nmv$qsmk)/(1-gW)
+# fluctuation parameter
+epsilon = coef(glm(nhefs.nmv$wt82_71_bin~-1+H0W+H1W+offset(qlogis(QAW)), family = binomial))
+# Step 4: update of original outcome model
+Q0W_1 = plogis(qlogis(Q0W)+ epsilon[1]/(1 - gW))
+Q1W_1 = plogis(qlogis(Q1W) + epsilon[2]/gW)
+
+EY1.supercustom.val = Q1W_1
+EY1.supercustom.est = mean(EY1.supercustom.val)
+EY1.supercustom.se = sd(EY1.supercustom.val) / sqrt(n)
+EY1.supercustom.ci = EY1.supercustom.est + c(-1, 1) * 1.96 * EY1.supercustom.se
+
+EY0.supercustom.val = Q0W_1
+EY0.supercustom.est = mean(EY0.supercustom.val)
+EY0.supercustom.se = sd(EY0.supercustom.val) / sqrt(n)
+EY0.supercustom.ci = EY0.supercustom.est + c(-1, 1) * 1.96 * EY0.supercustom.se
+
+

@@ -1,0 +1,1 @@
+clean_env = function(keep_in_env) rm(list=names(globalenv())[!names(globalenv()) %in% keep_in_env], envir =globalenv())

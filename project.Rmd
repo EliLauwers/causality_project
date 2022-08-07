@@ -2,13 +2,13 @@
 title: "Eli Lauwers - Causality Project"
 output:
   pdf_document:
-    number_sections: True
+    number_sections: False
 date: "2022-07-24"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  echo = TRUE,
+  echo = F,
   message = F,
   warning = F,
   error = F,
@@ -18,107 +18,94 @@ knitr::opts_chunk$set(
 )
 library(dplyr)
 library(ggplot2)
+library(tidyverse)
 set.seed(1234)
 ```
 
+```{r}
+extra_scripts = c("custom_pad","custom_pad","step_backwards","clean_env")
+source("scripts/preparation.R")
+for(file in extra_scripts) source(paste0("scripts/",file,".R"))
+results = list()
+keep_in_env = c("keep_in_env", ".Random.seed","results", "custom_pad","nhefs.nmv","nhefs",paste0("runQ", 1:7),extra_scripts)
+```
 
-# Background {.unnumbered}
+```{r include=FALSE}
+runQ1=T
+runQ3=T
+runQ4=T
+runQ5=T
+runQ6=T
+runQ7=T
+if(runQ1) source("q1.R")
+if(runQ3) source("q3.R")
+if(runQ4) source("q4.R")
+if(runQ5) source("q5.R")
+if(runQ6) source("q6.R")
+if(runQ7) source("q7.R")
+```
 
-Copy background
-
-# Preparation {.unnumbered}
+# Background and Preparation {.unnumbered}
 
 Read the dataset and modify it as follows:
-
-(code available in the .Rmd file)
-
-```{r preparation, echo = F}
-library("readxl")
-nhefs <- read_excel("nhefs.xls")
-# Ignore patients with missing outcome
-nhefs.nmv <- nhefs[which(!is.na(nhefs$wt82_71)), ]
-# Dichotomize the outcome variable
-nhefs.nmv$wt82_71_bin <- ifelse(nhefs.nmv$wt82_71 > 0, 1, 0)
-# Select reduced dataset
-nhefs.nmv <-
-  nhefs.nmv[, (
-    names(nhefs.nmv) %in% c(
-      # Weigth gain between 72 and 82
-      # => 1 if weight gain is present, 0 otherwise
-      "wt82_71_bin", 
-      "qsmk", # quit smoking 
-      "sex",
-      "dbp",
-      "race",
-      "sbp",
-      "age",
-      "education",
-      "smokeintensity",
-      "smokeyrs",
-      "tax71_82",
-      "exercise",
-      "active",
-      "wt71"
-    )
-  )]
-
-nhefs.nmv = nhefs.nmv[complete.cases(nhefs.nmv),]
-```
 
 In our analysis of this observational study we will aim to evaluate the marginal effect of quitting smoking (the information is held in the variable `qsmk`) on the weight gain between years 1971 and 1982 (the information is held in the variable `wt82_71_bin`, which is 1, in case of weight gain and 0 otherwise). The tutorial [1] may be a helpful reference for your analysis. Throughout, you may assume that the dataset contains a collection of covariates that is sufficient to control for confounding of the effect of quitting smoking on the risk of weight gain.
 
 \newpage
 
-# Logistic Regression outcome model
+# Q1: Logistic Regression outcome model
 
 **Question**: Estimate the marginal effect of quitting smoking on the risk of weight gain as a risk difference and a relative risk using a logistic regression outcome model. There is no need to be very exhaustive in building a model. You may for instance consider using a standard model choice, and make use of automated procedures (e.g. step in R) to select variables, if needed. More thorough model building will be considered later using causal machine 
 learning methods.
 
-**answer**: I used manual g-computation and a logistic outcome model (with predictors `qsmk`, `dbp`, `sex`, `age`, `wt71`, `smokeintensity`, `active`) to predict counterfactual outcomes. following results were obtained
+**answer**: Following estimates were obtained. 
 
-- Risk Difference:\phantom{h} **ADD** (p1 - p0)
-- Relative risk:\phantom{hhh} **ADD** (p1 / p0)
-
-I also used the `stdReg` package to cross check results.
-
-**Argumentation**:
-
-For the manual approach, I used the backwards step model to predict counterfactual outcomes for every instance in the dataset, while manually setting the treatment (`qsmk`) variable to a certain level. I only used predictions for instances without any missing data.Next, I averaged the results and calculated the effect measures.
-
-For information on the custom `step_backwards`-function, please see the appendix. In short, it uses a `while`-loop which refits the model until (1) every coefficient has a p value under the cut-off (.5) or (2) the treatment variable (`qsmk`) has the highest p value. 
-
-```{r q1, file = "q1.R",echo=seq(17)}
-source("q1.R")
+```{r}
+results$Q1_table
 ```
 
-\newpage
 
-# Advantages of causal machine learning
+**Argumentation**: Using backwards step logistic regression with cutoff of $.1$, I built an outcome model retaining predictors `qsmk` (the treatment), `dbp`, `sex`, `age`, `wt71`, `smokeintensity`, `active`. I used manual G-computation to predict counterfactual outcomes. More specifically, I used the fitted model to predict the outcomes for every person in the dataset while manually fixing the `qsmk` value to 0 or 1. I also used the `stdReg` package to cross check results.
+
+# Q2: Advantages of causal machine learning
 
 **Question**: Briefly discuss what you view as possible advantages of causal machine learning approaches (like those considered from question 4 onwards), relative to more standard statistical analyses as in question 1. List 2 possible advantages.
 
 **Answer**:
 
-\newpage
+1. It allows the use of data-adaptive algorithms like machine learning without sacrificing interpretability. 
+2. The estimators are *double robust*, which means that estimates are correct when either one of the outcome model or propensity score model is correctly specified. 
 
-# Propensity scores
+# Q3: Propensity scores
 
 **Question**: Use logistic regression to compute the propensity score for quitting smoking. There is no need to be very exhaustive in building a model. You may for instance consider using a standard model choice, and make use of automated procedures (e.g. step in R) to select variables, if needed. More thorough model building will be considered later using causal machine learning methods.
 
 Discuss the balance of covariates, distribution of propensity scores in both exposure groups and the overlap. Discuss if, based on the obtained results, you foresee difficulties in inferring the effect of quitting smoking on the risk of weight gain.
 
-**Answer**:
+**Answer**: Although there is significant overlap between both treatment groups in terms of propensity scores, There still are some inter-group differences. More specific, the distribution of the propensity scores for the treated group seems similar to the distribution for the untreated, although shifted to the right. It follows that treated people are more likely to have been treated, and both groups are not entirely (conditionally) exchangeable. It also follows that the final models will use extrapolation in areas of the propensity score where either group is not really present. 
 
-**Argumentation**:
+However, as the overlap between treatment groups is as high, I don't think the non-overlapping areas will have much impact on the final estimates.
 
-```{r q3, file="q3.R",echo=seq(3)}
-source("q3.R")
+**Argumentation**: I fitted a logistic regression model using backwards step regression with the treatment (`qsmk`) as the dependent variable. I used a cutoff of $.1$ and retained following predictors: `dbp`, `sex`, `age`, `race`, `education`, `smokeintensity`, `smokeyrs`, `exercise`. Next, I extracted the fitted values from the model object as the propensity scores
+
+
+```{r, fig.width=8, fig.height=3}
+if(runQ3) results$Q3_plot1
 ```
 
+```{r, fig.width=8, fig.height=4}
+if(runQ3) results$Q3_plot_continuous
+```
+
+```{r, fig.width=8, fig.height=4}
+if(runQ3) results$Q3_plot_categorical
+```
 
 \newpage
 
-# TMLE for 3 modelling cases
+
+
+# Q4: TMLE for 3 modelling cases
 
 **Question**: Calculate the targeted maximum likelihood estimate (TMLE) of the marginal effect of quitting smoking on the risk of weight gain (on the risk difference scale). Consider 3 cases in terms of modelling the propensity score and the risk of weight gain:
 
@@ -133,12 +120,69 @@ choices
 
 **Answer**:
 
+```{r}
+if(runQ3) results$Q4_table
+```
+
+
+
+
 **Argumentation**
 
-```{r q4 tutorial, file = "q4_tutorial.R"}
-source("q4_tutorial.R")
+# Q5: AIPTW for 3 modelling cases
+
+
+**Question**: Use augmented inverse probability of treatment weighting to estimate the (counterfactual) risk of weight gain, $P(Y^1 = 1)$, that would be seen if all were to quit smoking, as well as when no one were to quit smoking $(P(Y^0 = 1))$. As in the previous exercise, consider 3 cases in terms of modelling the propensity score and the risk of weight gain:
+
+- logistic regression models obtained above;
+- SuperLearner with default options for the outcome regression and propensity score models;
+- SuperLearner with the following selection of the models for the outcome regression and propensity score models. 
+
+`SL.library <- c("SL.glm","SL.step","SL.step.interaction","SL.glm.interaction","SL.gam","SL.randomForest","SL.rpart")`
+
+Estimate the standard errors and $95%$ confidence intervals for the obtained estimates (there is no need for using the bootstrap). Compare the results for different modelling choices.
+
+```{r}
+if(runQ5) results$Q5_table
 ```
 
-```{r q4 Superlearner, file = "q4_superlearner.R"}
-source("q4_superlearner.R")
+
+**Answer**:
+
+# Q6: ATE for results AIPTW and TMLE
+
+**Question**: An AIPTW estimate for the marginal effect of quitting smoking on the risk of weight gain (on the risk difference scale) is readily obtained as the difference between the estimates for $P(Y^1 = 1)$ and $P(Y^0 = 1)$, obtained in question 5. Report this difference along with a standard error (there is no need for using the bootstrap), and compare the result with the TMLE results from question 4.
+
+**Answer**:
+
+Based on AIPTW
+
+```{r}
+if(runQ6) results$Q6_table
 ```
+
+Based on TMLE (question 4)
+
+```{r}
+if(runQ4&&runQ6) results$Q4_table
+```
+
+
+
+# Q7: Estimates for $P(Y^a=1)$ for AIPTW and TMLE
+
+**Question**: Estimate $P(Y^1 = 1)$ and $P(Y^0 = 1)$ using TMLE with SuperLearner (with user-selected libraries as above); see the tutorial for how to do this (as the tmle function does not readily do this). Estimate the standard errors and 95% confidence intervals for the targeted estimates. Compare the results with those obtained via AIPTW in question 5
+
+**Answer**: 
+
+Based on TMLE 
+```{r}
+if(runQ7) results$Q7_table
+```
+
+Based on AIPTW (Question 5)
+
+```{r}
+if(runQ7&&runQ5) results$Q5_table
+```
+
