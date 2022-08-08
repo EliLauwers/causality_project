@@ -364,166 +364,90 @@ pre code {
 </div>
 
 
-<div id="about" class="section level1">
-<h1>About</h1>
-<p>This repo handles the 2022 project for “causality and missing
-data”</p>
+<div id="about-this-document" class="section level1">
+<h1>About this document</h1>
+<p>This repo handles the 2022 project for the course of “causality and
+missing data”. The project requirements can be found in
+<code>CMD2022_Project.pdf</code>. In essence, the project requires
+student to calculate the marginal effect of <em>quitting smoking</em> on
+<em>weight gain in a later stage</em> by means of various techniques.
+The final report is stored in <code>project.pdf</code>. The PDF-file is
+knit based on an R-Markdown file <code>project.Rmd</code>.</p>
 </div>
-<div id="progress" class="section level1">
-<h1>Progress</h1>
-<table style="width:100%;">
-<colgroup>
-<col width="4%" />
-<col width="56%" />
-<col width="9%" />
-<col width="17%" />
-<col width="10%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center">ID</th>
-<th>Description</th>
-<th align="center">Workload</th>
-<th align="center">Status</th>
-<th>Questions</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">1.1</td>
-<td>Risk difference using logistic regression outcome model</td>
-<td align="center">Little</td>
-<td align="center">:white_check_mark:</td>
-<td></td>
-</tr>
-<tr class="even">
-<td align="center">1.2</td>
-<td>Relative risk using logistic regression outcome model</td>
-<td align="center">Little</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td align="center">2</td>
-<td>Two Advantages of causal machine learning</td>
-<td align="center">Little</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="even">
-<td align="center">3.1</td>
-<td>Propensity score calculation</td>
-<td align="center">Medium</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td align="center">3.2</td>
-<td>Discuss balance of covariates</td>
-<td align="center">Medium</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="even">
-<td align="center">3.3</td>
-<td>Discuss balance of propensity scores</td>
-<td align="center">Medium</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td align="center">3.4</td>
-<td>Difficulties of inferring effect</td>
-<td align="center">Medium</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="even">
-<td align="center">4.1</td>
-<td>TMLE: logistic regression</td>
-<td align="center">High</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td align="center">4.2</td>
-<td>TMLE: Superlearner default</td>
-<td align="center">High</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="even">
-<td align="center">4.3</td>
-<td>TMLE: Superlearner custom</td>
-<td align="center">High</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td align="center">4.4</td>
-<td>Compare models</td>
-<td align="center">High</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="even">
-<td align="center">4.5</td>
-<td>Confidence intervals</td>
-<td align="center">High</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td align="center">5.1</td>
-<td>AIPWT: logistic regression</td>
-<td align="center">High</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="even">
-<td align="center">5.2</td>
-<td>AIPWT: Superlearner default</td>
-<td align="center">High</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td align="center">5.3</td>
-<td>AIPWT: Superlearner custom</td>
-<td align="center">High</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="even">
-<td align="center">5.4</td>
-<td>Compare models</td>
-<td align="center">High</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td align="center">5.5</td>
-<td>Confidence intervals</td>
-<td align="center">High</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="even">
-<td align="center">6</td>
-<td>AIPWT estimate</td>
-<td align="center">Little</td>
-<td align="center"></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td align="center">7</td>
-<td>estimates</td>
-<td align="center">High</td>
-<td align="center"></td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<div id="code-structure" class="section level1">
+<h1>Code structure</h1>
+<p>The project consists of 7 main questions. I used the same workflow
+for every question:</p>
+<ol start="0" style="list-style-type: decimal">
+<li>As general preparation, two objects were created:
+<code>results</code> and <code>keep_in_env</code></li>
+<li>Create a main question file in the main directory</li>
+</ol>
+<ul>
+<li>E.g.: Code for question 3 can be found in <code>q3.R</code></li>
+<li>Advantage: cutting up large projects in multiple code files helps to
+keep code files small and manageable</li>
+<li>Disadvantage: It is tempting to create a nested code file structure
+that is not as manageable anymore</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>If the main question consists of multiple subquestions, create a
+code file for every subquestion and store it in the
+<code>scripts</code>-directory</li>
+</ol>
+<ul>
+<li>E.g.: For questions 4, 5, and 7 I needed to fit multiple different
+models. Each of those models was stored in its own file</li>
+<li>This method was chosen to be able to quickly <em>switch off</em> an
+analysis (i.e. by out-commenting the particular
+<code>source(SUBQUESTION)</code> line), as sometimes I wanted to
+run/knit only a part of the document instead of the whole thing.</li>
+<li>Subquestion code files were structured with the goal of returning
+some values or output to the main question file</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>In the main question file, the results for that question were then
+stored in the <code>results</code> object.</li>
+<li>After appending to the <code>results</code> object, I clean the
+environment. Here, all objects present in the <code>keep_in_env</code>
+list remain in the environment, while all other objects are
+removed.</li>
+</ol>
+<ul>
+<li>I came up with a function <code>scripts/clean_env.R</code> to clean
+the global R-environment from within a sub environment.</li>
+<li>I chose this workflow because sometimes it can happen that a script
+does not run properly, but can still carry on running because of
+variables that have persisted since other runs. By cleaning the work
+environment, this method guarantees that a script cannot run properly if
+not all needed objects are created properly.</li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li>Within the <code>.Rmd</code> document, the <code>results</code>
+object is outputted as needed. Here, a boolean for every question is
+used (e.g: <code>runQ4=TRUE</code>). If a boolean evaluates to
+<code>FALSE</code>, the main code file and by extension relevant
+subquestion code files are not run, which saves runtime.</li>
+</ol>
+</div>
+<div id="workflow-and-things-learned" class="section level1">
+<h1>Workflow and things learned</h1>
+<p>I’ve noticed that I find it difficult to come up with a workflow
+which is flexible to not having to run full projects when I only want to
+see a small part of the output. In this project, I used a workflow of
+nested sourcing, and structuring code in nested code files. Looking
+back, I notice d that my codebase has become somewhat cluttered, with
+some room for optimization.</p>
+<p>If I were to be doing this project again, I would structure my code a
+bit different and more like a project I have done in professional
+context. - I would create a <code>.yml</code> file with some arguments
+to indicate which part of the report I want to run (e.g.:
+<code>runQ3=TRUE</code> or <code>runQ4.supercustom=FALSE</code>) - When
+the code for a (sub) question is ran, I would store the results to some
+file (type). - When a question is skipped, I would reuse the formerly
+stored results. - This workflow makes sure that my main files wouldn’t
+get as cluttered as now is the case. For example, <code>q5.R</code>
+would nearly be cut in half by removing all clutter.</p>
 </div>
 
 

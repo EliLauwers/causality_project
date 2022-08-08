@@ -9,7 +9,6 @@ m = glm(
 QAW = predict(m, type = "response")
 Q1W = predict(m, newdata = mutate(nhefs.nmv, qsmk = 1), type = "response")
 Q0W = predict(m, newdata = mutate(nhefs.nmv, qsmk = 0), type = "response")
-mean(Q1W - Q0W)
 
 # Step 2: propensity score
 formula.propensity = as.formula(paste0("qsmk~", paste0(preds.ds[preds.ds!="qsmk"], collapse = "+")))
@@ -39,7 +38,7 @@ EIC <- D1 - D0
 n <- nrow(nhefs.nmv)
 varHat.IC <- var(EIC)/n
 #ATE 95%CI
-ATEtmle1_CI <- c(ATEtmle1 - 1.96*sqrt(varHat.IC), ATEtmle1 + 1.96*sqrt(varHat.IC))
+ATEtmle1_CI <- ATEtmle1 + c(1, -1) * 1.96 * sqrt(varHat.IC)
 tutorial.est = ATEtmle1
 tutorial.se = sqrt(varHat.IC)
 tutorial.ci = ATEtmle1_CI

@@ -19,6 +19,8 @@ knitr::opts_chunk$set(
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
+library(SuperLearner)
+
 set.seed(1234)
 ```
 
@@ -44,14 +46,6 @@ if(runQ5) source("q5.R")
 if(runQ6) source("q6.R")
 if(runQ7) source("q7.R")
 ```
-
-# Background and Preparation {.unnumbered}
-
-Read the dataset and modify it as follows:
-
-In our analysis of this observational study we will aim to evaluate the marginal effect of quitting smoking (the information is held in the variable `qsmk`) on the weight gain between years 1971 and 1982 (the information is held in the variable `wt82_71_bin`, which is 1, in case of weight gain and 0 otherwise). The tutorial [1] may be a helpful reference for your analysis. Throughout, you may assume that the dataset contains a collection of covariates that is sufficient to control for confounding of the effect of quitting smoking on the risk of weight gain.
-
-\newpage
 
 # Q1: Logistic Regression outcome model
 
@@ -149,7 +143,7 @@ if(runQ5) results$Q5_table
 
 **Answer**:
 
-# Q6: ATE for results AIPTW and TMLE
+# Q6: $ATE$ for results AIPTW and TMLE
 
 **Question**: An AIPTW estimate for the marginal effect of quitting smoking on the risk of weight gain (on the risk difference scale) is readily obtained as the difference between the estimates for $P(Y^1 = 1)$ and $P(Y^0 = 1)$, obtained in question 5. Report this difference along with a standard error (there is no need for using the bootstrap), and compare the result with the TMLE results from question 4.
 
@@ -169,7 +163,7 @@ if(runQ4&&runQ6) results$Q4_table
 
 
 
-# Q7: Estimates for $P(Y^a=1)$ for AIPTW and TMLE
+# Q7: $P(Y^a=1)$ for AIPTW and TMLE
 
 **Question**: Estimate $P(Y^1 = 1)$ and $P(Y^0 = 1)$ using TMLE with SuperLearner (with user-selected libraries as above); see the tutorial for how to do this (as the tmle function does not readily do this). Estimate the standard errors and 95% confidence intervals for the targeted estimates. Compare the results with those obtained via AIPTW in question 5
 

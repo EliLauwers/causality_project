@@ -29,20 +29,3 @@ EY0.tutorial.val = (1 - nhefs.nmv$qsmk) * (nhefs.nmv$wt82_71_bin - Q0W) / (1 - g
 EY0.tutorial.est = mean(EY0.tutorial.val)
 EY0.tutorial.se = sd(EY0.tutorial.val) / sqrt(n)
 EY0.tutorial.ci = EY0.tutorial.est + c(-1, 1) * 1.96 * EY0.tutorial.se
-
-
-
-# AIPTW_ATE <- EY1aiptw - EY0aiptw
-
-
-# Calculation of the efficient IC
-# D1 <- (nhefs.nmv$qsmk) * (nhefs.nmv$wt82_71_bin - Q1W) / gW + Q1W - EY1aiptw
-# D0 <- (1 -nhefs.nmv$qsmk) * (nhefs.nmv$wt82_71_bin - Q0W) / (1 - gW) + Q0W - EY0aiptw
-# n = nrow(nhefs.nmv)
-# varHat_AIPTW <- var(D1 - D0) / n
-# ATEaiptw_CI <- c(AIPTW_ATE - 1.96*sqrt(varHat_AIPTW), AIPTW_ATE + 1.96*sqrt(varHat_AIPTW));
-# 
-# tutorial.est = AIPTW_ATE
-# tutorial.se = sqrt(varHat_AIPTW)
-# tutorial.ci = ATEaiptw_CI
-# 

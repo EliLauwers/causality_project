@@ -1,5 +1,3 @@
-library(SuperLearner)
-
 n = nrow(nhefs.nmv)
 newdata = bind_rows(nhefs.nmv,
                     mutate(nhefs.nmv, qsmk = 1),

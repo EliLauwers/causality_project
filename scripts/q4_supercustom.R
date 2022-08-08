@@ -1,4 +1,3 @@
-
 SL.library <-
   c(
     "SL.glm",
