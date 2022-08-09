@@ -49,3 +49,4 @@ EY0.supercustom.val = IC0
 EY0.supercustom.est = mean(IC0)
 EY0.supercustom.se = sd(IC0) / sqrt(n)
 EY0.supercustom.ci = EY0.supercustom.est + c(-1, 1) * 1.96 * EY0.supercustom.se
+

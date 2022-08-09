@@ -381,20 +381,17 @@ for every question:</p>
 <ol start="0" style="list-style-type: decimal">
 <li>As general preparation, two objects were created:
 <code>results</code> and <code>keep_in_env</code></li>
-<li>Create a main question file in the main directory</li>
-</ol>
+<li>Create a main question file in the main directory
 <ul>
 <li>E.g.: Code for question 3 can be found in <code>q3.R</code></li>
 <li>Advantage: cutting up large projects in multiple code files helps to
 keep code files small and manageable</li>
 <li>Disadvantage: It is tempting to create a nested code file structure
 that is not as manageable anymore</li>
-</ul>
-<ol start="2" style="list-style-type: decimal">
+</ul></li>
 <li>If the main question consists of multiple subquestions, create a
 code file for every subquestion and store it in the
-<code>scripts</code>-directory</li>
-</ol>
+<code>scripts</code>-directory
 <ul>
 <li>E.g.: For questions 4, 5, and 7 I needed to fit multiple different
 models. Each of those models was stored in its own file</li>
@@ -404,15 +401,12 @@ analysis (i.e. by out-commenting the particular
 run/knit only a part of the document instead of the whole thing.</li>
 <li>Subquestion code files were structured with the goal of returning
 some values or output to the main question file</li>
-</ul>
-<ol start="3" style="list-style-type: decimal">
+</ul></li>
 <li>In the main question file, the results for that question were then
 stored in the <code>results</code> object.</li>
 <li>After appending to the <code>results</code> object, I clean the
 environment. Here, all objects present in the <code>keep_in_env</code>
-list remain in the environment, while all other objects are
-removed.</li>
-</ol>
+list remain in the environment, while all other objects are removed.
 <ul>
 <li>I came up with a function <code>scripts/clean_env.R</code> to clean
 the global R-environment from within a sub environment.</li>
@@ -421,8 +415,7 @@ does not run properly, but can still carry on running because of
 variables that have persisted since other runs. By cleaning the work
 environment, this method guarantees that a script cannot run properly if
 not all needed objects are created properly.</li>
-</ul>
-<ol start="5" style="list-style-type: decimal">
+</ul></li>
 <li>Within the <code>.Rmd</code> document, the <code>results</code>
 object is outputted as needed. Here, a boolean for every question is
 used (e.g: <code>runQ4=TRUE</code>). If a boolean evaluates to
@@ -436,18 +429,25 @@ subquestion code files are not run, which saves runtime.</li>
 which is flexible to not having to run full projects when I only want to
 see a small part of the output. In this project, I used a workflow of
 nested sourcing, and structuring code in nested code files. Looking
-back, I notice d that my codebase has become somewhat cluttered, with
+back, I noticed that my codebase has become somewhat cluttered, with
 some room for optimization.</p>
 <p>If I were to be doing this project again, I would structure my code a
 bit different and more like a project I have done in professional
-context. - I would create a <code>.yml</code> file with some arguments
-to indicate which part of the report I want to run (e.g.:
-<code>runQ3=TRUE</code> or <code>runQ4.supercustom=FALSE</code>) - When
-the code for a (sub) question is ran, I would store the results to some
-file (type). - When a question is skipped, I would reuse the formerly
-stored results. - This workflow makes sure that my main files wouldn’t
-get as cluttered as now is the case. For example, <code>q5.R</code>
-would nearly be cut in half by removing all clutter.</p>
+context.</p>
+<ul>
+<li>I would create a <code>.yml</code> file with some arguments to
+indicate which part of the report I want to run (e.g.:
+<code>runQ3=TRUE</code> or <code>runQ4.supercustom=FALSE</code>). Also,
+the yaml file can be used to store some constants, like the used cutoff
+in backwards step regression, or the used superLearner libraries</li>
+<li>When the code for a (sub) question is ran, I would store the results
+to some file (type).</li>
+<li>When a question is skipped, I would reuse the formerly stored
+results.</li>
+<li>This workflow makes sure that my main files wouldn’t get as
+cluttered as now is the case. For example, <code>q5.R</code> would
+nearly be cut in half by removing all clutter.</li>
+</ul>
 </div>
 
 

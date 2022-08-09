@@ -1,5 +1,3 @@
-library(SuperLearner)
-library(tmle)
 TMLE2 = tmle(
   Y = nhefs.nmv$wt82_71_bin,
   A = nhefs.nmv$qsmk,

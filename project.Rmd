@@ -20,6 +20,7 @@ library(dplyr)
 library(ggplot2)
 library(tidyverse)
 library(SuperLearner)
+library(tmle)
 
 set.seed(1234)
 ```
@@ -49,103 +50,73 @@ if(runQ7) source("q7.R")
 
 # Q1: Logistic Regression outcome model
 
-**Question**: Estimate the marginal effect of quitting smoking on the risk of weight gain as a risk difference and a relative risk using a logistic regression outcome model. There is no need to be very exhaustive in building a model. You may for instance consider using a standard model choice, and make use of automated procedures (e.g. step in R) to select variables, if needed. More thorough model building will be considered later using causal machine 
-learning methods.
-
-**answer**: Following estimates were obtained. 
+Following estimates were obtained. 
 
 ```{r}
 results$Q1_table
 ```
 
 
-**Argumentation**: Using backwards step logistic regression with cutoff of $.1$, I built an outcome model retaining predictors `qsmk` (the treatment), `dbp`, `sex`, `age`, `wt71`, `smokeintensity`, `active`. I used manual G-computation to predict counterfactual outcomes. More specifically, I used the fitted model to predict the outcomes for every person in the dataset while manually fixing the `qsmk` value to 0 or 1. I also used the `stdReg` package to cross check results.
+**Argumentation**: Using backwards step logistic regression with cutoff of $.1$, I built an outcome model retaining following predictors: `qsmk` (the treatment), `dbp`, `sex`, `age`, `wt71`, `smokeintensity`, `active`. I used manual G-computation to predict outcomes $P(Y^1 = 1)$ and $P(Y^0 = 1)$. More specifically, I used the fitted model to predict the outcomes for every person in the dataset while manually fixing the `qsmk` value to 0 or 1. Next, I used the `stdReg` package to cross check results.
 
 # Q2: Advantages of causal machine learning
 
-**Question**: Briefly discuss what you view as possible advantages of causal machine learning approaches (like those considered from question 4 onwards), relative to more standard statistical analyses as in question 1. List 2 possible advantages.
+**Answer**: two advantage of causal machine learning versus more classic statistical techniques are:
 
-**Answer**:
+1. It allows for the use of data-adaptive algorithms  (e.g.: machine learning in the outcome and treatment model) without sacrificing interpretability of estimates. 
+2. The estimators are *double robust*, which means that estimates are *correct* (efficient and consistent) when either one of the outcome model or propensity score model is correctly specified. 
 
-1. It allows the use of data-adaptive algorithms like machine learning without sacrificing interpretability. 
-2. The estimators are *double robust*, which means that estimates are correct when either one of the outcome model or propensity score model is correctly specified. 
+# Q3: Estimate propensity scores
 
-# Q3: Propensity scores
-
-**Question**: Use logistic regression to compute the propensity score for quitting smoking. There is no need to be very exhaustive in building a model. You may for instance consider using a standard model choice, and make use of automated procedures (e.g. step in R) to select variables, if needed. More thorough model building will be considered later using causal machine learning methods.
-
-Discuss the balance of covariates, distribution of propensity scores in both exposure groups and the overlap. Discuss if, based on the obtained results, you foresee difficulties in inferring the effect of quitting smoking on the risk of weight gain.
-
-**Answer**: Although there is significant overlap between both treatment groups in terms of propensity scores, There still are some inter-group differences. More specific, the distribution of the propensity scores for the treated group seems similar to the distribution for the untreated, although shifted to the right. It follows that treated people are more likely to have been treated, and both groups are not entirely (conditionally) exchangeable. It also follows that the final models will use extrapolation in areas of the propensity score where either group is not really present. 
-
-However, as the overlap between treatment groups is as high, I don't think the non-overlapping areas will have much impact on the final estimates.
+**Answer**: There is significant overlap of propensity scores across treatment groups. However, some inter-group differences can be found in the propensity scores as well as in the underlying variables. As a result, some bias will be introduced due to extropolation in areas of the propensity scores where one treatment group largely dominates the other. 
+Propensity score distributions for both treatment groups seem fairly identical, although the treated have on average higher propensity scores than the non-treated. It follows that treated people are more likely to have been treated, and both groups are not entirely (conditionally) exchangeable. However, **since both distributions are so similar, I don't think the issues of non-overlap will have high impact on estimates.**
 
 **Argumentation**: I fitted a logistic regression model using backwards step regression with the treatment (`qsmk`) as the dependent variable. I used a cutoff of $.1$ and retained following predictors: `dbp`, `sex`, `age`, `race`, `education`, `smokeintensity`, `smokeyrs`, `exercise`. Next, I extracted the fitted values from the model object as the propensity scores
 
+\newpage
 
-```{r, fig.width=8, fig.height=3}
+```{r, fig.width=8, fig.height=2.7}
 if(runQ3) results$Q3_plot1
 ```
 
-```{r, fig.width=8, fig.height=4}
-if(runQ3) results$Q3_plot_continuous
-```
-
-```{r, fig.width=8, fig.height=4}
-if(runQ3) results$Q3_plot_categorical
+```{r, fig.width=8, fig.height=8}
+if(runQ3) results$Q3_plot_grid
 ```
 
 \newpage
 
+# Q4: $\widehat{ATE}_{TMLE}$ for 3 modelling cases
 
-
-# Q4: TMLE for 3 modelling cases
-
-**Question**: Calculate the targeted maximum likelihood estimate (TMLE) of the marginal effect of quitting smoking on the risk of weight gain (on the risk difference scale). Consider 3 cases in terms of modelling the propensity score and the risk of weight gain:
-
-- logistic regression models obtained above;
-- SuperLearner with default options for the outcome regression and propensity score models;
-- SuperLearner with the following selection of the models for the outcome regression and propensity score models.
-
-`SL.library <- c("SL.glm","SL.step","SL.step.interaction", "SL.glm.interaction", "SL.gam", "SL.randomForest", "SL.rpart")`
-
-For this, you can either use the `tmle` function in R, or follow the steps of the tutorial. Estimate the standard errors and 95% confidence intervals for the obtained estimates (there is no need for using the bootstrap). Compare the results for different modelling
-choices
-
-**Answer**:
+**Answer**: following estimates were obtained:
 
 ```{r}
-if(runQ3) results$Q4_table
+if(runQ4) results$Q4_table
 ```
 
+**Note**: for questions 4 up to 7, I used the same set of covariates in the model building exercise for the treatment and outcome model. More specific, I selected (via double selection) the subset of covariates which were either associated with outcome or with treatment using a cutoff of $.10$. Following variables were retained by means of double selection:`qsmk` (the treatment), `dbp`, `sex`, `age`, `wt71`, `race`, `education`, `smokeintensity`, `smokeyrs`, and `exercise`
 
+**Interpretation**: Although there are no significant differences between estimates - every estimate lies in the confidence intervals of the others - , two trends seem to appear. First, the $\widehat{ATE}_{TMLE}$ is smallest for the tutorial modelling case, which is based on simple logistic regression models for treatment and outcome. The $\widehat{ATE}_{TMLE}$ grows larger with the default SuperLearner technique and grows even further by use of the custom SuperLearner libraries. 
 
+The second finding is the fact that the standard error gets smaller from the tutorial estimate to the SuperLearner estimate with custom libraries. 
 
-**Argumentation**
+Both findings combined, it seems as though the prediction of either outcome or treatment is improved by exchanging (simple) logistic linear models for more intricate and data-adaptive measures. As the constructed $\widehat{ATE}_{TMLE}$ is based on a double robust estimator, the estimate is consistent and efficient when either the treatment model or outcome model is specified correctly.
 
-# Q5: AIPTW for 3 modelling cases
+# Q5: $P_{AIPTW}(Y^a= 1)$ for 3 modelling cases
 
-
-**Question**: Use augmented inverse probability of treatment weighting to estimate the (counterfactual) risk of weight gain, $P(Y^1 = 1)$, that would be seen if all were to quit smoking, as well as when no one were to quit smoking $(P(Y^0 = 1))$. As in the previous exercise, consider 3 cases in terms of modelling the propensity score and the risk of weight gain:
-
-- logistic regression models obtained above;
-- SuperLearner with default options for the outcome regression and propensity score models;
-- SuperLearner with the following selection of the models for the outcome regression and propensity score models. 
-
-`SL.library <- c("SL.glm","SL.step","SL.step.interaction","SL.glm.interaction","SL.gam","SL.randomForest","SL.rpart")`
-
-Estimate the standard errors and $95%$ confidence intervals for the obtained estimates (there is no need for using the bootstrap). Compare the results for different modelling choices.
+**Answer**: Following estimates were obtained
 
 ```{r}
 if(runQ5) results$Q5_table
 ```
 
 
-**Answer**:
+**Answer**: Looking at the results table, multiple trends emerge. Firstly, for every used technique, estimates for $P(Y^1=1)$ are significantly larger than than estimates for $P(Y^0=1)$. If every person in the population quit smoking, then more people would experience weight gain than in a situation where every person continued smoking.
 
-# Q6: $ATE$ for results AIPTW and TMLE
+A second finding is the fact that standard error for $P(Y^1=1)$ goes down by switching simple linear logistic models for the superlearner approach, while the opposite is true for $P(Y^0=1)$. 
 
-**Question**: An AIPTW estimate for the marginal effect of quitting smoking on the risk of weight gain (on the risk difference scale) is readily obtained as the difference between the estimates for $P(Y^1 = 1)$ and $P(Y^0 = 1)$, obtained in question 5. Report this difference along with a standard error (there is no need for using the bootstrap), and compare the result with the TMLE results from question 4.
+A third finding is that standard errors within an estimate are fairly similar between the default and custom implementation of SuperLearner but are dissimilar between the usage of SuperLearner and the more simple logistic regression approach.
+
+# Q6: $\widehat{ATE}_{TMLE}$ versus $\widehat{ATE}_{AIPTW}$
 
 **Answer**:
 
@@ -161,11 +132,15 @@ Based on TMLE (question 4)
 if(runQ4&&runQ6) results$Q4_table
 ```
 
+**Interpretation**: When looking at the results table, estimates for $\widehat{ATE}$ seem fairly similar across estimators and estimation techniques. Point estimates range from $13\%$ and $14\%$, with no remarkable differences between estimators or estimator techniques. 
 
+A first notable remark is that estimates and standard errors are identical for the tutorial versions of both estimators. In the tutorial, both treatment and outcome models are based on simple logistic regression. 
 
-# Q7: $P(Y^a=1)$ for AIPTW and TMLE
+A second finding is the difference in standard errors. For $\widehat{ATE}_{AIPTW}$, the standard errors range from $.027$ to $.040$. For the other estimate ($\widehat{ATE}_{AIPTW}$), standard errors lay somewhat lower, ranging from $.023$ to $.027$. 
 
-**Question**: Estimate $P(Y^1 = 1)$ and $P(Y^0 = 1)$ using TMLE with SuperLearner (with user-selected libraries as above); see the tutorial for how to do this (as the tmle function does not readily do this). Estimate the standard errors and 95% confidence intervals for the targeted estimates. Compare the results with those obtained via AIPTW in question 5
+A third notion is found when comparing estimates for the tutorial technique against the SuperLearner approach between estimators. For $\widehat{ATE}_{AIPTW}$, Estimates for the SuperLearner techniques are less precise than the estimate for the tutorial-approach. For $\widehat{ATE}_{TMLE}$, this notion is reversed, as standard errors for the SuperLearner estimates are smaller than those for the tutorial estimate. However, inter-estimator technique precision differences for $\widehat{ATE}_{TMLE}$ are smaller than those for $\widehat{ATE}_{AIPTW}$. 
+
+# Q7: $P_{TMLE}(Y^a=1)$ versus $P_{AIPTW}(Y^a=1)$
 
 **Answer**: 
 
@@ -180,3 +155,4 @@ Based on AIPTW (Question 5)
 if(runQ7&&runQ5) results$Q5_table
 ```
 
+**Interpretation**: In question 6, the estimate for $\widehat{ATE}_{TMLE}$ was on average more precise than the estimate for $\widehat{ATE}_{AIPTW}$. Comparing estimates for $P(Y^a = 1)$ for both estimating techniques, point estimates do not seem to vary greatly across estimates. However, inter-estimator technique precision of estimates $P(Y^a = 1)$ differ greatly. Whereas standard errors for $P_{AIPTW}(Y^a = 1)$ range from $.010$ to $.040$, the standard errors for both estimates $P_{TMLE}(Y^a = 1)$ are equal to $.004$, making TMLE more precise as an estimator technique than AIPTW in this particular use case. A remark to this finding is that the $P_{TMLE}(Y^a = 1)$ were - as the project requirements require - only based on the SuperLearner technique using the custom library set. It is unsure if the standard error for $P_{TMLE}(Y^a = 1)$ would be more precise across estimates.

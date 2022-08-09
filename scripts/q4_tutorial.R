@@ -38,7 +38,7 @@ EIC <- D1 - D0
 n <- nrow(nhefs.nmv)
 varHat.IC <- var(EIC)/n
 #ATE 95%CI
-ATEtmle1_CI <- ATEtmle1 + c(1, -1) * 1.96 * sqrt(varHat.IC)
+ATEtmle1_CI <- ATEtmle1 + c(-1, 1) * 1.96 * sqrt(varHat.IC)
 tutorial.est = ATEtmle1
 tutorial.se = sqrt(varHat.IC)
 tutorial.ci = ATEtmle1_CI
