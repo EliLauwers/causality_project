@@ -20,26 +20,50 @@ m = step_backwards(
 predictors.treatment = names(coef(m))[-1]
 preds.ds = unique(c(predictors.outcome, predictors.treatment))
 
-EY1.supercustom.est = NULL
-EY1.supercustom.se = NULL
-EY1.supercustom.ci = NULL
-EY1.supercustom.val = NULL
+EY1.tutorial.est = EY1.superdefault.est = EY1.supercustom.est = NULL
+EY1.tutorial.se = EY1.superdefault.se = EY1.supercustom.se = NULL
+EY1.tutorial.ci = EY1.superdefault.ci = EY1.supercustom.ci = NULL
+EY1.tutorial.val = EY1.superdefault.val = EY1.supercustom.val = NULL
 
-EY0.supercustom.est = NULL
-EY0.supercustom.se = NULL
-EY0.supercustom.ci = NULL
-EY0.supercustom.val = NULL
+EY0.tutorial.est = EY0.superdefault.est = EY0.supercustom.est = NULL
+EY0.tutorial.se = EY0.superdefault.se = EY0.supercustom.se = NULL
+EY0.tutorial.ci = EY0.superdefault.ci = EY0.supercustom.ci = NULL
+EY0.tutorial.val = EY0.superdefault.val = EY0.supercustom.val = NULL
 
+source("scripts/q7_tutorial.R")
+source("scripts/q7_superdefault.R")
 source("scripts/q7_supercustom.R")
 
-EY1.ests = c(EY1.supercustom.est)
-EY1.ses = c(EY1.supercustom.se)
-EY1.cis = list(EY1.supercustom.ci)
+
+if (is.null(EY1.superdefault.est)) {
+  EY1.superdefault.est = EY1.tutorial.est
+  EY1.superdefault.se = EY1.tutorial.se
+  EY1.superdefault.ci = EY1.tutorial.ci
+  
+  EY0.superdefault.est = EY0.tutorial.est
+  EY0.superdefault.se = EY0.tutorial.se
+  EY0.superdefault.ci = EY0.tutorial.ci
+}
+
+if (is.null(EY1.supercustom.est)) {
+  EY1.supercustom.est = EY1.tutorial.est
+  EY1.supercustom.se = EY1.tutorial.se
+  EY1.supercustom.ci = EY1.tutorial.ci
+  
+  EY0.supercustom.est = EY0.tutorial.est
+  EY0.supercustom.se = EY0.tutorial.se
+  EY0.supercustom.ci = EY0.tutorial.ci
+}
+
+
+EY1.ests = c(EY1.tutorial.est, EY1.superdefault.est, EY1.supercustom.est)
+EY1.ses = c(EY1.tutorial.se, EY1.superdefault.se, EY1.supercustom.se)
+EY1.cis = list(EY1.tutorial.ci, EY1.superdefault.ci, EY1.supercustom.ci)
 EY1.cis = sapply(EY1.cis, custom_pad)
 
-EY0.ests = c(EY0.supercustom.est)
-EY0.ses = c(EY0.supercustom.se)
-EY0.cis = list(EY0.supercustom.ci)
+EY0.ests = c(EY0.tutorial.est, EY0.superdefault.est, EY0.supercustom.est)
+EY0.ses = c(EY0.tutorial.se, EY0.superdefault.se, EY0.supercustom.se)
+EY0.cis = list(EY0.tutorial.ci, EY0.superdefault.ci, EY0.supercustom.ci)
 EY0.cis = sapply(EY0.cis, custom_pad)
 
 
@@ -60,5 +84,19 @@ Q7_table = knitr::kable(
 )
 
 results[["Q7_table"]] = Q7_table
-clean_env(keep_in_env)
+results[["TMLE.values"]] = list(
+  tutorial = list(
+    EY1 = EY1.tutorial.val,
+    EY0 = EY0.tutorial.val
+  ),
+  superdefault = list(
+    EY1 = EY1.superdefault.val,
+    EY0 = EY0.superdefault.val
+  ),
+  supercustom = list(
+    EY1 = EY1.supercustom.val,
+    EY0 = EY0.supercustom.val
+  )
+)
+if(clean_all) clean_env(keep_in_env)
 

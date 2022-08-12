@@ -142,4 +142,4 @@ grid
 results[["Q3_plot1"]] = Q3_plot1
 results[["Q3_plot_grid"]] = grid
 # results[["Q3_plot_categorical"]] = Q3_plot_categorical
-clean_env(keep_in_env)
+if(clean_all) clean_env(keep_in_env)

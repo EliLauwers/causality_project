@@ -30,7 +30,7 @@ extra_scripts = c("custom_pad","custom_pad","step_backwards","clean_env")
 source("scripts/preparation.R")
 for(file in extra_scripts) source(paste0("scripts/",file,".R"))
 results = list()
-keep_in_env = c("keep_in_env", ".Random.seed","results", "custom_pad","nhefs.nmv","nhefs",paste0("runQ", 1:7),extra_scripts)
+keep_in_env = c("keep_in_env", "run_discussion", "clean_all",".Random.seed","results", "custom_pad","nhefs.nmv","nhefs",paste0("runQ", 1:7),extra_scripts)
 ```
 
 ```{r include=FALSE}
@@ -40,12 +40,15 @@ runQ4=T
 runQ5=T
 runQ6=T
 runQ7=T
+run_discussion = T
+clean_all = T
 if(runQ1) source("q1.R")
 if(runQ3) source("q3.R")
 if(runQ4) source("q4.R")
 if(runQ5) source("q5.R")
 if(runQ6) source("q6.R")
 if(runQ7) source("q7.R")
+if(run_discussion) source("discussion.R")
 ```
 
 # Q1: Logistic Regression outcome model
@@ -156,3 +159,11 @@ if(runQ7&&runQ5) results$Q5_table
 ```
 
 **Interpretation**: In question 6, the estimate for $\widehat{ATE}_{TMLE}$ was on average more precise than the estimate for $\widehat{ATE}_{AIPTW}$. Comparing estimates for $P(Y^a = 1)$ for both estimating techniques, point estimates do not seem to vary greatly across estimates. However, inter-estimator technique precision of estimates $P(Y^a = 1)$ differ greatly. Whereas standard errors for $P_{AIPTW}(Y^a = 1)$ range from $.010$ to $.040$, the standard errors for both estimates $P_{TMLE}(Y^a = 1)$ are equal to $.004$, making TMLE more precise as an estimator technique than AIPTW in this particular use case. A remark to this finding is that the $P_{TMLE}(Y^a = 1)$ were - as the project requirements require - only based on the SuperLearner technique using the custom library set. It is unsure if the standard error for $P_{TMLE}(Y^a = 1)$ would be more precise across estimates.
+
+\newpage
+### Distributions for $P(Y^a = 1)$
+
+```{r fig.width=8, fig.height=8}
+if(run_discussion) results$discussion_plot
+```
+

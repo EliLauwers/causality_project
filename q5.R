@@ -98,5 +98,5 @@ results[["aiptw.values"]] = list(
     EY0 = EY0.supercustom.val
   )
 )
-clean_env(keep_in_env)
+if(clean_all) clean_env(keep_in_env)
 

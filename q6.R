@@ -25,4 +25,4 @@ Q6_table = knitr::kable(
 )
 
 results[["Q6_table"]] = Q6_table
-clean_env(keep_in_env)
+if(clean_all) clean_env(keep_in_env)

@@ -55,4 +55,4 @@ Q1_table=knitr::kable(data.frame(
 
 
 results[["Q1_table"]] = Q1_table
-clean_env(keep_in_env)
+if(clean_all) clean_env(keep_in_env)
